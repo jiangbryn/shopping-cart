@@ -5,7 +5,7 @@ const App = () => {
   const products = Object.values(data);
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch('./public/data/products.json');
+      const response = await fetch('./data/products.json');
       const json = await response.json();
       setData(json);
     };
