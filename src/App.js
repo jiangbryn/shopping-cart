@@ -14,9 +14,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const useAdded = () => {
+  const [added, setAdded] = useState([]);
+  const toggle = (x) => {
+    if(!added.includes(x))
+      setAdded([x].concat(added));
+  };
+  return [ added, toggle];
+}
+
 const App = () => {
   const classes = useStyles();
   const [data, setData] = useState({});
+  const [added, toggle] = useAdded();
   const products = Object.values(data);
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,14 +40,14 @@ const App = () => {
   return (
     <React.Fragment>
       <CssBaseline />
-      <FloatCart products={products}/>
+      <FloatCart products={products} state={{added, toggle}}/>
       <Container className={classes.outerContainer}>
         <Grid container spacing={3} direction="row">
           <Grid item xs={3}>
             <Size/>
           </Grid>
           <Grid item xs={9}>
-            <ProductList products={products}/>
+            <ProductList products={products} state={{added, toggle}}/>
           </Grid>
         </Grid>
       </Container>

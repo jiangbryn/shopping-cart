@@ -99,9 +99,10 @@ const useListStyles = makeStyles(theme => ({
   },
 }));
 
-const CartCard = ({ product }) => {
+const CartCard = ({ product, state }) => {
   const classes = useCardStyles();
-  const deleteItem = () => {
+  const handleDelete = () => {
+    
   };
   return (
     <React.Fragment>
@@ -125,7 +126,7 @@ const CartCard = ({ product }) => {
           <IconButton
             aria-label="delete item"
             edge="end"
-            onClick={deleteItem}
+            onClick={handleDelete}
           >
             <img src={"data/icons/sprite_delete-icon.png"} height="12" width="18"></img>
           </IconButton>
@@ -135,12 +136,13 @@ const CartCard = ({ product }) => {
   );
 };
 
-const CartList = ({ products }) => {
+const CartList = ({ products, state }) => {
   const classes = useListStyles();
+  const displayList = products.filter(product => state.added.includes(product.sku));
   return (
     <React.Fragment>
       <Box className={classes.outerBox}>
-        {products.map(product =>      
+        {displayList.map(product =>      
           <Box key={product.sku} className={classes.innerBox}>
             <CartCard product={product} />
           </Box>)
@@ -149,7 +151,8 @@ const CartList = ({ products }) => {
     </React.Fragment>
   );
 };
-const FloatCart = ({ products }) => {
+
+const FloatCart = ({ products, state }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -199,13 +202,7 @@ const FloatCart = ({ products }) => {
             <img src={"data/icons/sprite_delete-icon.png"}></img>
           </IconButton>
         </div>
-        <div>
-          {products.map(product =>      
-            <Box key={product.sku} className={classes.innerBox}>
-              <CartCard product={product} />
-            </Box>)
-          }
-        </div>
+        <CartList products={products} state={state} />
       </Drawer>
     </React.Fragment>
   );

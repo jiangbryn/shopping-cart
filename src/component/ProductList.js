@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Product = ({ product }) => {
+const Product = ({ product, state }) => {
 	const classes = useStyles();
 	return (
 		<Card className={classes.card}>
@@ -63,7 +63,9 @@ const Product = ({ product }) => {
 				<Button className={classes.sizeButton}>XL</Button>
 			</div>
 			<div style={{position: 'absolute', top:420, right: 0, left: 0}}>
-				<Button className={classes.addButton}>
+				<Button className={classes.addButton} 
+					onClick={() => state.toggle(product.sku)}
+				>
 			        Add to cart
 			    </Button>
 		    </div>
@@ -71,13 +73,13 @@ const Product = ({ product }) => {
 	);
 };
 
-const ProductList = ({ products }) => {
+const ProductList = ({ products, state }) => {
 	return (
 		<React.Fragment>
 			<Grid container spacing={2} direction="row">
 				{products.map(product =>			
 					<Grid item key={product.sku}>
-						<Product product={product} />
+						<Product product={product} state={state} />
 					</Grid>)
 				}
 			</Grid>
