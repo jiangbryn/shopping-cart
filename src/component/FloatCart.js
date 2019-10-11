@@ -101,8 +101,9 @@ const useListStyles = makeStyles(theme => ({
 
 const CartCard = ({ product, state }) => {
   const classes = useCardStyles();
-  const handleDelete = () => {
-    
+  const handleDelete = (x) => {
+    //console.log(x);
+    //state.setAdded(state.added.filter(y => y.sku !== x.sku))
   };
   return (
     <React.Fragment>
@@ -126,7 +127,7 @@ const CartCard = ({ product, state }) => {
           <IconButton
             aria-label="delete item"
             edge="end"
-            onClick={handleDelete}
+            onClick={handleDelete(product)}
           >
             <img src={"data/icons/sprite_delete-icon.png"} height="12" width="18"></img>
           </IconButton>
@@ -138,14 +139,18 @@ const CartCard = ({ product, state }) => {
 
 const CartList = ({ products, state }) => {
   const classes = useListStyles();
-  const displayList = products.filter(product => state.added.includes(product.sku));
   return (
     <React.Fragment>
       <Box className={classes.outerBox}>
-        {displayList.map(product =>      
-          <Box key={product.sku} className={classes.innerBox}>
-            <CartCard product={product} />
-          </Box>)
+        {JSON.stringify(products) != "{}" ? 
+          products.map(product =>      
+            <Box key={product.sku+"cart"} className={classes.innerBox}>
+              <CartCard product={product} />
+            </Box>) :               
+          <Typography variant="body2">
+            Your cart is empty!
+          </Typography>
+
         }
       </Box>
     </React.Fragment>

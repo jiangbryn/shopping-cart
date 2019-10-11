@@ -42,6 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 const Product = ({ product, state }) => {
 	const classes = useStyles();
+	const [selectSize, setSelectSize] = useState("S");
 	return (
 		<Card className={classes.card}>
 			<img src={"data/products/"+product.sku+"_1.jpg"} height="280" width="200"></img>
@@ -57,14 +58,30 @@ const Product = ({ product, state }) => {
 				</Typography>
 			</div>
 			<div style={{position: 'absolute', top:360, right: 0, left: 0}}>
-				<Button className={classes.sizeButton}>S</Button>
-				<Button className={classes.sizeButton}>M</Button>
-				<Button className={classes.sizeButton}>L</Button>
-				<Button className={classes.sizeButton}>XL</Button>
+				<Button className={classes.sizeButton}
+				onClick={()=>setSelectSize("S")}
+				>
+					S
+				</Button>
+				<Button className={classes.sizeButton}
+				onClick={()=>setSelectSize("M")}
+				>
+					M
+				</Button>
+				<Button className={classes.sizeButton}
+				onClick={()=>setSelectSize("L")}
+				>
+					L
+				</Button>
+				<Button className={classes.sizeButton}
+				onClick={()=>setSelectSize("XL")}
+				>
+					XL
+				</Button>
 			</div>
 			<div style={{position: 'absolute', top:420, right: 0, left: 0}}>
 				<Button className={classes.addButton} 
-					onClick={() => state.toggle(product.sku)}
+					onClick={() => state.toggle(product, selectSize)}
 				>
 			        Add to cart
 			    </Button>

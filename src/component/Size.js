@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Size = () => {
+const Size = ({state}) => {
 	const classes = useStyles();
 	return (
 		<React.Fragment>
@@ -26,10 +26,26 @@ const Size = () => {
 				Size:
 			</Typography>
 			<div>
-			    <Button className={classes.button}>S</Button>
-			    <Button className={classes.button}>M</Button>
-			    <Button className={classes.button}>L</Button>
-			    <Button className={classes.button}>XL</Button>
+			    <Button className={classes.button} 
+			    	onClick={() => state.setSize("S")}
+			    >
+			    	S
+			    </Button>
+			    <Button className={classes.button} 
+			    	onClick={() => state.setSize("M")}
+			    >
+			    	M
+			    </Button>
+			    <Button className={classes.button} 
+			    	onClick={() => state.setSize("L")}
+			    >
+			    	L
+			    </Button>
+			    <Button className={classes.button} 
+			    	onClick={() => state.setSize("XL")}
+			    >
+			    	XL
+			    </Button>
 		    </div>
 		</React.Fragment>
 	);

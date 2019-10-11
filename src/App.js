@@ -15,39 +15,49 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const useAdded = () => {
-  const [added, setAdded] = useState([]);
-  const toggle = (x) => {
-    if(!added.includes(x))
-      setAdded([x].concat(added));
+  const [added, setAdded] = useState({});
+  const toggle = (product, size) => {
+    if(product[size] > 0)
+      setAdded([product].concat(added));
   };
-  return [ added, toggle];
+  return [ added, toggle, setAdded];
 }
 
 const App = () => {
   const classes = useStyles();
-  const [data, setData] = useState({});
-  const [added, toggle] = useAdded();
-  const products = Object.values(data);
+  const [products, setProducts] = useState({});
+  const [added, toggle, setAdded] = useAdded();
+  const [size, setSize] = useState("S");
+  const items = Object.values(products);
+  const stockItems = items.filter(product => product[size] > 0);
   useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await fetch('./data/products.json');
-      const json = await response.json();
-      setData(json);
+    const fetchProduct = async () => {
+      const responseData = await fetch('./data/products.json');
+      const data = await responseData.json();
+      const responseInven = await fetch('./data/inventory.json');
+      const inventory = await responseInven.json();
+      const handleData = (data) => {
+        let result = {};
+        Object.keys(data).forEach(p=>{result[p] = Object.assign(data[p],inventory[p])});
+        setProducts(result);
+      };
+      handleData(data);
     };
-    fetchProducts();
+    fetchProduct();
   }, []);
-
   return (
     <React.Fragment>
       <CssBaseline />
-      <FloatCart products={products} state={{added, toggle}}/>
+      <FloatCart products={added} state={{toggle, setAdded}}/>
       <Container className={classes.outerContainer}>
         <Grid container spacing={3} direction="row">
           <Grid item xs={3}>
-            <Size/>
+            <Size state={{size, setSize}}/>
           </Grid>
           <Grid item xs={9}>
-            <ProductList products={products} state={{added, toggle}}/>
+            <ProductList products={stockItems} 
+              state={{added, toggle}}
+            />
           </Grid>
         </Grid>
       </Container>
