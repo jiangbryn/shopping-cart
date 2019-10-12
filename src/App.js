@@ -7,6 +7,22 @@ import ProductList from './component/ProductList'
 import Size from './component/Size'
 import FloatCart from './component/FloatCart'
 
+import firebase from 'firebase/app';
+import 'firebase/database';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA29xTosIJvIdvfplak40XFQoWn-OejJ1w",
+  authDomain: "shopping-cart-2ec80.firebaseapp.com",
+  databaseURL: "https://shopping-cart-2ec80.firebaseio.com",
+  projectId: "shopping-cart-2ec80",
+  storageBucket: "shopping-cart-2ec80.appspot.com",
+  messagingSenderId: "865774923914",
+  appID: "1:865774923914:web:b1cc91d367e38e53babd73",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 const useStyles = makeStyles(theme => ({
   outerContainer: {
     width: 1500,
@@ -34,14 +50,15 @@ const App = () => {
     const fetchProduct = async () => {
       const responseData = await fetch('./data/products.json');
       const data = await responseData.json();
-      const responseInven = await fetch('./data/inventory.json');
-      const inventory = await responseInven.json();
-      const handleData = (data) => {
+      //const responseInven = await fetch('./data/inventory.json');
+      //const inventory = await responseInven.json();
+      const handleData = snap => {
         let result = {};
-        Object.keys(data).forEach(p=>{result[p] = Object.assign(data[p],inventory[p])});
+        Object.keys(data).forEach(p=>{result[p] = Object.assign(data[p],snap.val()[p])});
         setProducts(result);
       };
-      handleData(data);
+      db.ref('inventory').on('value', handleData, error => alert(error));
+      return () => { db.ref('inventory').off('value', handleData); };
     };
     fetchProduct();
   }, []);
