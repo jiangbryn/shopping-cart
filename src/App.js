@@ -9,6 +9,8 @@ import FloatCart from './component/FloatCart'
 
 import firebase from 'firebase/app';
 import 'firebase/database';
+import 'firebase/auth';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA29xTosIJvIdvfplak40XFQoWn-OejJ1w",
@@ -22,6 +24,15 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: () => false
+  }
+};
 
 const useStyles = makeStyles(theme => ({
   outerContainer: {
@@ -32,8 +43,8 @@ const useStyles = makeStyles(theme => ({
 
 const useAdded = () => {
   const [added, setAdded] = useState({});
-  const toggle = (product, size) => {
-    if(product[size] > 0)
+  const toggle = (product, size, user) => {
+    if(product[size] > 0 && user != null)
       setAdded([product].concat(added));
   };
   return [ added, toggle, setAdded];
@@ -46,12 +57,12 @@ const App = () => {
   const [size, setSize] = useState("S");
   const items = Object.values(products);
   const stockItems = items.filter(product => product[size] > 0);
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     const fetchProduct = async () => {
       const responseData = await fetch('./data/products.json');
       const data = await responseData.json();
-      //const responseInven = await fetch('./data/inventory.json');
-      //const inventory = await responseInven.json();
       const handleData = snap => {
         let result = {};
         Object.keys(data).forEach(p=>{result[p] = Object.assign(data[p],snap.val()[p])});
@@ -62,10 +73,15 @@ const App = () => {
     };
     fetchProduct();
   }, []);
+
+  useEffect(() => {
+   firebase.auth().onAuthStateChanged(setUser)
+  },[]);
+
   return (
     <React.Fragment>
       <CssBaseline />
-      <FloatCart products={added} state={{toggle, setAdded}}/>
+      <FloatCart products={added} user={user} state={{toggle, setAdded}}/>
       <Container className={classes.outerContainer}>
         <Grid container spacing={3} direction="row">
           <Grid item xs={3}>
@@ -73,6 +89,7 @@ const App = () => {
           </Grid>
           <Grid item xs={9}>
             <ProductList products={stockItems} 
+              user={user}
               state={{added, toggle}}
             />
           </Grid>

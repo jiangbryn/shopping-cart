@@ -10,6 +10,36 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+
+import 'firebase/auth';
+import firebase from 'firebase/app';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+
+const uiConfig = {
+  signInFlow: 'popup',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: () => false
+  }
+};
+
+const Welcome = ({ user }) => (
+  <div color="info">
+    Welcome, {user.displayName}
+    <Button color="secondary" onClick={() => firebase.auth().signOut()}>
+      Log out
+    </Button>
+  </div>
+);
+const SignIn = () => (
+  <StyledFirebaseAuth
+    uiConfig={uiConfig}
+    firebaseAuth={firebase.auth()}
+  />
+);
 
 const drawerWidth = 400;
 const useStyles = makeStyles(theme => ({
@@ -156,13 +186,15 @@ const CartList = ({ products, state }) => {
   );
 };
 
-const FloatCart = ({ products, state }) => {
+const FloatCart = ({ products, state, user }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    if(user != null) {
+      setOpen(true);
+    }
   };
 
   const handleDrawerClose = () => {
@@ -187,6 +219,7 @@ const FloatCart = ({ products, state }) => {
             <img src={"data/icons/bag-icon.png"} height="25" width="25"></img>
           </IconButton>
         </Toolbar>
+        {!user ? <SignIn/> : <Welcome user={user}/>}
       </AppBar>
       <Drawer
         className={classes.drawer}

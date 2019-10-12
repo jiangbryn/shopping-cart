@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Product = ({ product, state }) => {
+const Product = ({ product, user, state }) => {
 	const classes = useStyles();
 	const [selectSize, setSelectSize] = useState("S");
 	return (
@@ -81,7 +81,7 @@ const Product = ({ product, state }) => {
 			</div>
 			<div style={{position: 'absolute', top:420, right: 0, left: 0}}>
 				<Button className={classes.addButton} 
-					onClick={() => state.toggle(product, selectSize)}
+					onClick={() => state.toggle(product, selectSize, user)}
 				>
 			        Add to cart
 			    </Button>
@@ -90,13 +90,13 @@ const Product = ({ product, state }) => {
 	);
 };
 
-const ProductList = ({ products, state }) => {
+const ProductList = ({ products, state, user }) => {
 	return (
 		<React.Fragment>
 			<Grid container spacing={2} direction="row">
 				{products.map(product =>			
 					<Grid item key={product.sku}>
-						<Product product={product} state={state} />
+						<Product product={product} user={user} state={state} />
 					</Grid>)
 				}
 			</Grid>
