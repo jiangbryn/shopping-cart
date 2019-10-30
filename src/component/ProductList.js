@@ -40,9 +40,31 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Product = ({ product, user, state }) => {
+const Product = ({ product, user, state, invt }) => {
 	const classes = useStyles();
 	const [selectSize, setSelectSize] = useState("S");
+	const handleAddCart = () => {
+		if(product[selectSize] > 0){
+			let saveInvent = invt.inventory;
+			saveInvent[product.sku][selectSize] -= 1;
+			product[selectSize] -= 1;
+			invt.setInventory(saveInvent);	
+			let addList = state.added;
+			const index = addList.findIndex(item=>item.product.sku === product.sku && item.size===selectSize);
+			
+			if (index > -1) {
+      	addList[index].quantity+=1;
+		  } else {
+  			addList.push({
+	        product,
+	        quantity: 1,
+	        size: selectSize,
+	    	})
+    	}
+    	state.setAdded(addList.slice(0));
+			//console.log(state.added);
+		}
+	};
 	return (
 		<Card className={classes.card}>
 			<img src={"data/products/"+product.sku+"_1.jpg"} height="280" width="200"></img>
@@ -80,9 +102,7 @@ const Product = ({ product, user, state }) => {
 				</Button>
 			</div>
 			<div style={{position: 'absolute', top:420, right: 0, left: 0}}>
-				<Button className={classes.addButton} 
-					onClick={() => state.toggle(product, selectSize, user)}
-				>
+				<Button className={classes.addButton} onClick={handleAddCart}>
 			        Add to cart
 			    </Button>
 		    </div>
@@ -90,13 +110,13 @@ const Product = ({ product, user, state }) => {
 	);
 };
 
-const ProductList = ({ products, state, user }) => {
+const ProductList = ({ products, state, user, invt }) => {
 	return (
 		<React.Fragment>
 			<Grid container spacing={2} direction="row">
 				{products.map(product =>			
 					<Grid item key={product.sku}>
-						<Product product={product} user={user} state={state} />
+						<Product product={product} user={user} state={state} invt={invt} />
 					</Grid>)
 				}
 			</Grid>

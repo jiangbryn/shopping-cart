@@ -129,10 +129,23 @@ const useListStyles = makeStyles(theme => ({
   },
 }));
 
-const CartCard = ({ product, products, state }) => {
+const CartCard = ({ item, products, state, invt }) => {
   const classes = useCardStyles();
   const handleDelete = () => {
-    state.setAdded(products.filter(y => y.sku !== product.sku));
+    let saveInvent = invt.inventory;
+    saveInvent[item.product.sku][item.size] += 1;
+    invt.setInventory(saveInvent);  
+    item.product[item.size] += 1;
+    let addList = state.added;
+    const index = addList.findIndex(i=>i.product.sku === item.product.sku && i.size===item.size);
+
+    if (index > -1) {
+      addList[index].quantity -= 1;
+      if (addList[index].quantity === 0) {
+        addList.splice(index,1);
+      }
+    }
+    state.setAdded(addList.slice(0));    
   };
   return (
     <React.Fragment>
@@ -140,16 +153,20 @@ const CartCard = ({ product, products, state }) => {
       <Card className={classes.card}>
         <Box className={classes.outerBox}>
           <Box className={classes.details}>
-            <img src={"data/products/"+product.sku+"_1.jpg"} height="80" width="55"></img>
+            <img src={"data/products/"+item.product.sku+"_1.jpg"} height="80" width="55"></img>
           </Box>
           <Box className={classes.details}>
             <Box className={classes.content}>
               <Typography variant="body2">
-                {product.title}
+                {item.product.title}
               </Typography>
               <Typography variant="body2">
-                {product.currencyFormat}
-                {product.price}
+                {item.size}
+                {item.quantity}
+              </Typography>
+              <Typography variant="body2">
+                {item.product.currencyFormat}
+                {item.product.price}
               </Typography>
             </Box>
           </Box>
@@ -166,15 +183,15 @@ const CartCard = ({ product, products, state }) => {
   );
 };
 
-const CartList = ({ products, state }) => {
+const CartList = ({ products, state, invt }) => {
   const classes = useListStyles();
   return (
     <React.Fragment>
       <Box className={classes.outerBox}>
         {JSON.stringify(products) != "{}" ? 
-          products.map(product =>      
-            <Box key={product.sku+"cart"} className={classes.innerBox}>
-              <CartCard product={product} products={products} state={state} />
+          state.added.map(item =>      
+            <Box key={item.product.sku+"cart"} className={classes.innerBox}>
+              <CartCard item={item} state={state} products={products} invt={invt} />
             </Box>) :               
           <Typography variant="body2">
             Your cart is empty!
@@ -186,7 +203,7 @@ const CartList = ({ products, state }) => {
   );
 };
 
-const FloatCart = ({ products, state, user }) => {
+const FloatCart = ({ products, state, db, user, invt }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -239,7 +256,7 @@ const FloatCart = ({ products, state, user }) => {
             <img src={"data/icons/sprite_delete-icon.png"}></img>
           </IconButton>
         </div>
-        <CartList products={products} state={state} />
+        <CartList products={products} state={state} invt={invt} />
       </Drawer>
     </React.Fragment>
   );
