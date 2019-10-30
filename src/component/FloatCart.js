@@ -83,6 +83,14 @@ const useStyles = makeStyles(theme => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-start',
   },
+  checkoutButton: {
+    background: 'lightgrey',
+    color: 'white',
+    borderRadius: 2,
+    margin: 1,
+    padding: 1,
+    size: 'large',
+  },
 }));
 
 const useCardStyles = makeStyles(theme => ({
@@ -188,7 +196,7 @@ const CartList = ({ products, state, invt }) => {
   return (
     <React.Fragment>
       <Box className={classes.outerBox}>
-        {JSON.stringify(products) != "{}" ? 
+        {JSON.stringify(state.added) != "{}" ? 
           state.added.map(item =>      
             <Box key={item.product.sku+"cart"} className={classes.innerBox}>
               <CartCard item={item} state={state} products={products} invt={invt} />
@@ -217,6 +225,27 @@ const FloatCart = ({ products, state, db, user, invt }) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleCheckout = () => {
+    const addList = state.added;
+    if(addList != null && addList.length != 0) {
+      const inventory = invt.inventory;
+      let sum = 0;
+      addList.forEach(item => {
+        sum += item.product.price * item.quantity;
+      });
+      //console.log(inventory);
+      /*
+      const newPostKey = db
+        .ref("inventory")
+        .set(inventory);
+      */
+      state.setAdded({});
+      window.alert("The total is $"+sum);
+    } else {
+      window.alert("Cart is empty!");
+    }
+  }
   return (
     <React.Fragment>
       <CssBaseline />
@@ -257,6 +286,7 @@ const FloatCart = ({ products, state, db, user, invt }) => {
           </IconButton>
         </div>
         <CartList products={products} state={state} invt={invt} />
+        <Button className={classes.checkoutButton} onClick={handleCheckout} > Check Out </Button>
       </Drawer>
     </React.Fragment>
   );
